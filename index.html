@@ -859,6 +859,7 @@
   });
 
 
+  <script>
   document.addEventListener("DOMContentLoaded", () => {
     const chatContainer = document.getElementById("chat-container");
     const chatBox = document.getElementById("chat-box");
@@ -869,6 +870,9 @@
     const userInput = document.getElementById("user-input");
     const sendButton = document.getElementById("send-button");
     const botFirstMessage = document.querySelector(".bot-first-message");
+    
+    // OBTENEMOS REFERENCIA AL BODY DEL IFRAME
+    const bodyChat = document.getElementById("body-chat"); 
 
     const userSendMessage = sessionStorage.getItem("userSendMessage");
     if (userSendMessage) {
@@ -877,9 +881,20 @@
 
     function toggleChat() {
       if (chatContainer.classList.contains("show")) {
+        // Lógica de Cierre del Chat
         chatContainer.classList.toggle("show");
         setTimeout(() => (chatContainer.style.position = "absolute"), 500);
+
+        // CUANDO SE CIERRA: Hacemos el cuerpo click-through
+        bodyChat.style.pointerEvents = "none"; 
+        // El botón de apertura debe seguir siendo clicable
+        openButton.style.pointerEvents = "auto"; 
+
       } else {
+        // Lógica de Apertura del Chat
+        // CUANDO SE ABRE: El cuerpo debe capturar los clics
+        bodyChat.style.pointerEvents = "auto";
+        
         chatContainer.style.position = "static";
         chatContainer.classList.toggle("show");
       }
@@ -918,6 +933,12 @@
       );
     });
     observerImg.observe(chatBox, { childList: true });
+
+    // ESTADO INICIAL: Forzar el cuerpo a ser click-through al cargar
+    if (!chatContainer.classList.contains("show")) {
+      bodyChat.style.pointerEvents = "none";
+      openButton.style.pointerEvents = "auto";
+    }
   });
 
   document.addEventListener("DOMContentLoaded", () => {
@@ -982,3 +1003,4 @@
 
 
 </html>
+
