@@ -287,6 +287,7 @@
     transition: 1s;
     border: solid;
     border-width: 0px;
+    pointer-events: auto;
   }
 
   #open-button-icon {
@@ -858,6 +859,15 @@
     });
   });
 
+  // Función para enviar un mensaje al padre (WordPress)
+  function setIframePointers(mode) {
+    if (window.parent) {
+      window.parent.postMessage({
+        type: 'ASTUREX_IFRAME_POINTER_EVENTS',
+        state: mode // 'auto' o 'none'
+      }, '*');
+    }
+  }
 
   document.addEventListener("DOMContentLoaded", () => {
     const chatContainer = document.getElementById("chat-container");
@@ -870,8 +880,11 @@
     const sendButton = document.getElementById("send-button");
     const botFirstMessage = document.querySelector(".bot-first-message");
     
-    // OBTENEMOS REFERENCIA AL BODY DEL IFRAME
-    const bodyChat = document.getElementById("body-chat"); 
+    // Aseguramos que el ícono de cerrar no capture el evento y permita cerrar.
+    const closeButtonIcon = closeButton.querySelector('i');
+    if (closeButtonIcon) {
+      closeButtonIcon.style.pointerEvents = 'none'; 
+    }
 
     const userSendMessage = sessionStorage.getItem("userSendMessage");
     if (userSendMessage) {
@@ -884,18 +897,16 @@
         chatContainer.classList.toggle("show");
         setTimeout(() => (chatContainer.style.position = "absolute"), 500);
 
-        // CUANDO SE CIERRA: Hacemos el cuerpo click-through
-        bodyChat.style.pointerEvents = "none"; 
-        // El botón de apertura debe seguir siendo clicable
-        openButton.style.pointerEvents = "auto"; 
+        // AVISAMOS AL PADRE: Hacer el iframe click-through (para interactuar con WP)
+        setIframePointers('none');
 
       } else {
         // Lógica de Apertura del Chat
-        // CUANDO SE ABRE: El cuerpo debe capturar los clics
-        bodyChat.style.pointerEvents = "auto";
-        
+        // AVISAMOS AL PADRE: Hacer el iframe capturar clics (para interactuar con el chat)
+        setIframePointers('auto');
+
         chatContainer.style.position = "static";
-        chatContainer.classList.toggle("show");
+        chatContainer.classList.add("show");
       }
     }
     openButton.addEventListener("click", toggleChat);
@@ -998,9 +1009,16 @@
       subtree: true,
     });
   });
+  // ESTADO INICIAL: Forzar el iframe a click-through al cargar
+    if (!chatContainer.classList.contains("show")) {
+      setIframePointers('none');
+    } else {
+      setIframePointers('auto');
+    }
 </script>
 
 
 </html>
+
 
 
