@@ -13,7 +13,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600&display=swap" rel="stylesheet" />
 </head>
 
-<body id="body-chat">
+<div id="asturex-chat-widget">
   <div id="chat-container">
     <div id="chat-header">
       <div id="header-img">
@@ -96,10 +96,10 @@
     </div>
     <!--<div id="open-button-shadow"></div>-->
   </button>
-</body>
+</div>
 
 <style>
-  #body-chat {
+  #asturex-chat-widget {
     font-family: 'Open Sans';
     display: flex;
     flex-direction: column;
@@ -109,6 +109,14 @@
     margin: 0;
     padding-left: 1%;
     padding-right: 1%;
+    /* ESTO ES LO CLAVE para la posición fija */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    z-index: 9999; 
+    pointer-events: none;
   }
 
   #chat-container {
@@ -888,34 +896,12 @@
     }
 
     function toggleChat() {
-      /*if (chatContainer.classList.contains("show")) {
+      if (chatContainer.classList.contains("show")) {
         chatContainer.classList.toggle("show");
         setTimeout(() => (chatContainer.style.position = "absolute"), 500);
       } else {
         chatContainer.style.position = "static";
         chatContainer.classList.toggle("show");
-      }*/
-      const isCurrentlyOpen = chatContainer.classList.contains("show");
-  
-      if (isCurrentlyOpen) {
-        // 1. Cerrando el chat
-        // Primero quitamos la clase 'show'
-        chatContainer.classList.remove("show");
-
-        // 2. Aplicamos 'click-through' al body después de que la animación termine (300ms es seguro)
-        setTimeout(() => {
-          chatContainer.style.position = "absolute";
-          window.parent.postMessage({ command: 'resize_chat', mode: 'closed' }, '*'); // Hacemos el iframe click-through
-        }, 300); 
-
-      } else {
-        // 1. Abriendo el chat
-        // Quitamos 'click-through' inmediatamente para que el chat sea interactivo
-        window.parent.postMessage({ command: 'resize_chat', mode: 'open' }, '*');
-
-        // 2. Abrimos el chat
-        chatContainer.style.position = "static";
-        chatContainer.classList.add("show");
       }
     }
     openButton.addEventListener("click", toggleChat);
@@ -1016,6 +1002,7 @@
 
 
 </html>
+
 
 
 
