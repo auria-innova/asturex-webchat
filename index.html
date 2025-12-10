@@ -757,11 +757,21 @@
       opacity: 0;
     }
   }
+  /* Nuevo CSS para permitir la interacción con el contenido detrás del iframe */
+  #body-chat.click-through {
+    pointer-events: none; /* Hace que todo el contenido del body no intercepte clics */
+  }
+
+  #body-chat.click-through #open-button {
+    pointer-events: auto; /* Hace que solo el botón de apertura sea clickeable */
+  }
 </style>
 
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 <script>
   document.addEventListener("DOMContentLoaded", () => {
+    const bodyChat = document.getElementById("body-chat");
+    bodyChat.classList.add("click-through");
     const chatBox = document.getElementById("chat-box");
     const userInput = document.getElementById("user-input");
     const sendButton = document.getElementById("send-button");
@@ -869,6 +879,8 @@
     const userInput = document.getElementById("user-input");
     const sendButton = document.getElementById("send-button");
     const botFirstMessage = document.querySelector(".bot-first-message");
+    const bodyChat = document.getElementById("body-chat");
+    const chatContainer = document.getElementById("chat-container");
 
     const userSendMessage = sessionStorage.getItem("userSendMessage");
     if (userSendMessage) {
@@ -876,12 +888,34 @@
     }
 
     function toggleChat() {
-      if (chatContainer.classList.contains("show")) {
+      /*if (chatContainer.classList.contains("show")) {
         chatContainer.classList.toggle("show");
         setTimeout(() => (chatContainer.style.position = "absolute"), 500);
       } else {
         chatContainer.style.position = "static";
         chatContainer.classList.toggle("show");
+      }*/
+      const isCurrentlyOpen = chatContainer.classList.contains("show");
+  
+      if (isCurrentlyOpen) {
+        // 1. Cerrando el chat
+        // Primero quitamos la clase 'show'
+        chatContainer.classList.remove("show");
+
+        // 2. Aplicamos 'click-through' al body después de que la animación termine (300ms es seguro)
+        setTimeout(() => {
+          chatContainer.style.position = "absolute";
+          bodyChat.classList.add("click-through"); // Hacemos el iframe click-through
+        }, 300); 
+
+      } else {
+        // 1. Abriendo el chat
+        // Quitamos 'click-through' inmediatamente para que el chat sea interactivo
+        bodyChat.classList.remove("click-through");
+
+        // 2. Abrimos el chat
+        chatContainer.style.position = "static";
+        chatContainer.classList.add("show");
       }
     }
     openButton.addEventListener("click", toggleChat);
@@ -982,4 +1016,5 @@
 
 
 </html>
+
 
