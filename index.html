@@ -905,13 +905,13 @@
         // 2. Aplicamos 'click-through' al body después de que la animación termine (300ms es seguro)
         setTimeout(() => {
           chatContainer.style.position = "absolute";
-          bodyChat.classList.add("click-through"); // Hacemos el iframe click-through
+          window.parent.postMessage({ command: 'resize_chat', mode: 'closed' }, '*'); // Hacemos el iframe click-through
         }, 300); 
 
       } else {
         // 1. Abriendo el chat
         // Quitamos 'click-through' inmediatamente para que el chat sea interactivo
-        bodyChat.classList.remove("click-through");
+        window.parent.postMessage({ command: 'resize_chat', mode: 'open' }, '*');
 
         // 2. Abrimos el chat
         chatContainer.style.position = "static";
@@ -1016,5 +1016,6 @@
 
 
 </html>
+
 
 
